@@ -64,29 +64,30 @@ public class Member2DAO {
 
 	// 단건조회
 	public Member2VO selectOne(Member2VO memberVO) {
-		Member2VO resultVo = null;
+		Member2VO resultVO = null;
 		ResultSet rs = null;
 		try {
 			conn = ConnectionManager.getConnnect();
-			String sql = " SELECT MEMBER_NO, MEMBER_ID, MEMBER_PW, NICKNAME, MEMBER_TEL"
+			String sql = " SELECT MEMBER_NO, MEMBER_ID, MEMBER_PW, NICKNAME, MEMBER_TEL,"
 					+ "  MEMBER_EMAIL, SIGNUP_DATE, TICKET_DATE, LAST_ACCESS_DATE, GENDER, TICKET_CODE"
 					+ " FROM MEMBER2"
-					+ " WHERE NICKNAME=?";
+					+ " WHERE MEMBER_ID=?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, memberVO.getNickname());
+			pstmt.setString(1, memberVO.getMember_id());
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
-				resultVo.setMember_no(rs.getString("MEMBER_NO"));
-				resultVo.setMember_id(rs.getString("MEMBER_ID"));
-				resultVo.setMember_pw(rs.getString("MEMBER_PW"));
-				resultVo.setNickname(rs.getString("NICKNAME"));
-				resultVo.setMember_tel(rs.getString("MEMBER_TEL"));
-				resultVo.setMember_email(rs.getString("MEMBER_EMAIL"));
-				resultVo.setSignup_date(rs.getString("SIGNUP_DATE"));
-				resultVo.setTicket_date(rs.getString("TICKET_DATE"));
-				resultVo.setLast_access_date(rs.getString("LAST_ACCESS_DATE"));
-				resultVo.setGender(rs.getString("GENDER"));
-				resultVo.setTicket_code(rs.getString("TICKET_CODE"));
+				resultVO = new Member2VO();
+				resultVO.setMember_no(rs.getString("MEMBER_NO"));
+				resultVO.setMember_id(rs.getString("MEMBER_ID"));
+				resultVO.setMember_pw(rs.getString("MEMBER_PW"));
+				resultVO.setNickname(rs.getString("NICKNAME"));
+				resultVO.setMember_tel(rs.getString("MEMBER_TEL"));
+				resultVO.setMember_email(rs.getString("MEMBER_EMAIL"));
+				resultVO.setSignup_date(rs.getString("SIGNUP_DATE"));
+				resultVO.setTicket_date(rs.getString("TICKET_DATE"));
+				resultVO.setLast_access_date(rs.getString("LAST_ACCESS_DATE"));
+				resultVO.setGender(rs.getString("GENDER"));
+				resultVO.setTicket_code(rs.getString("TICKET_CODE"));
 			} else {
 				System.out.println("no data");
 			}
@@ -95,15 +96,15 @@ public class Member2DAO {
 		} finally {
 			ConnectionManager.close(rs, pstmt, conn);
 		}
-		return resultVo;
+		return resultVO;
 	}
 
 	public void delete(Member2VO memberVO) {
 		try {
 			conn = ConnectionManager.getConnnect();
-			String sql = "delete member2 where nickname= ?";
+			String sql = "delete member2 where member_id= ?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, memberVO.getNickname());
+			pstmt.setString(1, memberVO.getMember_id());
 			int r = pstmt.executeUpdate();
 			System.out.println(r + "건이 삭제됨.");
 		} catch (Exception e) {
@@ -116,10 +117,13 @@ public class Member2DAO {
 	public void update(Member2VO memberVO) {
 		try {
 			conn = ConnectionManager.getConnnect();
-			String sql = "update nickname = ? where member_id= ?";
+			String sql = "update member2 set member_pw = ?,nickname = ?, member_email = ?, member_tel = ? where member_id = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, memberVO.getMember_pw());
-			pstmt.setString(2, memberVO.getMember_id());
+			pstmt.setString(2, memberVO.getNickname());
+			pstmt.setString(3, memberVO.getMember_email());
+			pstmt.setString(4, memberVO.getMember_tel());
+			pstmt.setString(5, memberVO.getMember_id());
 			int r = pstmt.executeUpdate();
 			System.out.println(r + "건이 수정됨.");
 		} catch (Exception e) {
@@ -130,28 +134,20 @@ public class Member2DAO {
 	}
 
 	public void insert(Member2VO memberVO) {
-		Member2VO resultVo = null;
-		ResultSet rs = null;
 		try {
 
 			// 1.DB연결
 			conn = ConnectionManager.getConnnect();
 			// 2.sql 구문실행
-			String sql = "insert into member2 (member_no, member_id, member_pw, nickname, member_tel, member_email,signup_date, ticket_date, last_access_date, gender, ticket_code)"
-					+ "values(no_seq, ?,?,?,?,?,sysdate,?,?,?,?)";
-			resultVo = new Member2VO();
-			resultVo = new Member2VO();
-			resultVo.setMember_no(rs.getString("MEMBER_NO"));
-			resultVo.setMember_id(rs.getString("MEMBER_ID"));
-			resultVo.setMember_pw(rs.getString("MEMBER_PW"));
-			resultVo.setNickname(rs.getString("NICKNAME"));
-			resultVo.setMember_tel(rs.getString("MEMBER_TEL"));
-			resultVo.setMember_email(rs.getString("MEMBER_EMAIL"));
-			resultVo.setSignup_date(rs.getString("SIGNUP_DATE"));
-			resultVo.setTicket_date(rs.getString("TICKET_DATE"));
-			resultVo.setLast_access_date(rs.getString("LAST_ACCESS_DATE"));
-			resultVo.setGender(rs.getString("GENDER"));
-			resultVo.setTicket_code(rs.getString("TICKET_CODE"));
+			String sql = "insert into member2 (member_no, member_id, member_pw, nickname, member_tel, member_email, gender, signup_date)"
+					+ "values (no_seq.nextval,?,?,?,?,?,?,sysdate)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, memberVO.getMember_id());
+			pstmt.setString(2, memberVO.getMember_pw());
+			pstmt.setString(3, memberVO.getNickname());
+			pstmt.setString(4, memberVO.getMember_tel());
+			pstmt.setString(5, memberVO.getMember_email());
+			pstmt.setString(6, memberVO.getGender());
 			int r = pstmt.executeUpdate();
 
 			// 3.결과처리

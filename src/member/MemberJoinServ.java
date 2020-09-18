@@ -21,18 +21,18 @@ public class MemberJoinServ extends HttpServlet {
 		System.out.println("등록실행");
 		
 		Member2VO memberVO = new Member2VO();
+		memberVO.setMember_no(request.getParameter("member_no"));
 		memberVO.setMember_id(request.getParameter("member_id"));
 		memberVO.setMember_pw(request.getParameter("member_pw"));
 		memberVO.setNickname(request.getParameter("nickname"));
 		memberVO.setMember_tel(request.getParameter("member_tel"));
 		memberVO.setMember_email(request.getParameter("member_email"));
-		memberVO.setSignup_date(request.getParameter("signup_date"));
-		memberVO.setGender(request.getParameter("gender"));		
+		memberVO.setGender(request.getParameter("gender"));
 		
 		Member2DAO dao = new Member2DAO();
 		dao.insert(memberVO);
 		
-		response.sendRedirect("memberSelectAll.jsp");
+		request.getRequestDispatcher("Hello.jsp").forward(request, response);
 	}
 
 }
